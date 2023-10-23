@@ -1,5 +1,8 @@
 version: '3.7'
 
+volumes:
+    mariadb:
+
 services:
     gateway:
         image: krakenstdio/k-api-gateway:latest
@@ -23,6 +26,8 @@ services:
         build:
             context: ./users
             dockerfile: Dockerfile
+        depends_on:
+            - db
         env_file:
             - ./users/.env
         volumes:
@@ -38,3 +43,12 @@ services:
             - ./orders/.env
         volumes:
           - ./orders:/app
+    db:
+        image: mariadb
+        restart: always
+        ports: 
+            - 3306:3306
+        env_file:
+            - ./db/.env
+        volumes:
+            - mariadb:/var/lib/mysql                
