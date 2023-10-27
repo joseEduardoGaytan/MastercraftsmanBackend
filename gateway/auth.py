@@ -46,14 +46,14 @@ def decode_access_token(authorization: str = None):
 
 
 def generate_request_header(token_payload):
-    return {'request-user-id': str(token_payload['id'])}
+    print(dict(token_payload), "rH")
+    return {'request-user-id': str(token_payload.get("id"))}
 
 
-def is_admin_user(token_payload):
-    print(token_payload,"TKPL")
-    #payload = decode_access_token(token_payload)              
-    return True
-    #return payload['user_type'] == 'admin'
+def is_admin_user(token_payload):    
+    payload = decode_access_token(token_payload.get("access_token"))              
+    print(payload)
+    return payload['user_type'] == 'admin'
 
 # def is_admin_user(token_payload):          
 #     return token_payload['user_type'] == 'admin'

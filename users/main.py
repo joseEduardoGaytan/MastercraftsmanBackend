@@ -89,8 +89,7 @@ async def get_users(request: Request, response: Response,
                     request_user_id: str = Header(None)):
     
     #users_list = conn.execute(users.select())
-    users = list(get_all_users())
-    print(user_list)
+    users_list = list(get_all_users())    
     return users_list
 
 
