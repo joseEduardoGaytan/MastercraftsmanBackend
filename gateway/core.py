@@ -76,11 +76,11 @@ def route(
                     # in case a new decoder is used by dependency injection and
                     # there might be an unexpected error
                     exc = str(e)
-                finally:
+                finally:                    
                     if exc:
                         raise HTTPException(
                             status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail=exc,
+                            detail=exc+" exception22",
                             headers={'WWW-Authenticate': 'Bearer'},
                         )
 

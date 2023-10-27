@@ -12,6 +12,9 @@ from fake.db import (get_user_by_username,
                      delete_user_from_db,
                      update_user_in_db)
 
+from db import conn
+from models import users
+
 app = FastAPI()
 PROTECTED_USER_IDS = [1, 2]
 
@@ -75,11 +78,20 @@ async def create_user(user: UserForm,
     return user_in_db
 
 
+# @app.get('/api/users', status_code=status.HTTP_200_OK)
+# async def get_users(request: Request, response: Response,
+#                     request_user_id: str = Header(None)):
+#     users = list(get_all_users())
+#     return users
+
 @app.get('/api/users', status_code=status.HTTP_200_OK)
 async def get_users(request: Request, response: Response,
                     request_user_id: str = Header(None)):
+    
+    #users_list = conn.execute(users.select())
     users = list(get_all_users())
-    return users
+    print(user_list)
+    return users_list
 
 
 @app.get('/api/users/{user_id}', status_code=status.HTTP_200_OK)

@@ -1,5 +1,6 @@
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine, text, MetaData
 engine = create_engine("mysql+pymysql://master:craft@db/demo")
+meta = MetaData()
 conn = engine.connect()
 
 #how to use it
