@@ -1,0 +1,2 @@
+#drop table if exists users;
+insert into users values (null,'admin','admin@master.com','5th ave # 21','zacatecas','mx','gpe', '9802','$2b$12$16kNu5IW80k1Tw7xz2H3iOCsz0.oMZ7q5OSGa/OIfOae0WGFe8aI2','admin',0,null)

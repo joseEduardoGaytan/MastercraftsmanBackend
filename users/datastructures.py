@@ -27,3 +27,16 @@ class UserInDb(BaseModel):
     user_type: str
     hashed_password: str
     created_by: int
+
+class UserInDbChk(BaseModel):
+    id: int
+    username: str
+    email: str
+    address: str
+    state_province: str
+    city: str
+    country: str
+    zip_code: str
+    hashed_password: str
+    user_type: str
+    banned: int 

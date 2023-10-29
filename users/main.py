@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, status, Request, Response, Header
 from fastapi.middleware.cors import CORSMiddleware
 
 from auth import verify_password, get_password_hash
-from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm
+from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDbChk
 
 from fake.db import (get_user_by_username,
                      get_user_by_email,
@@ -34,7 +34,12 @@ app.add_middleware(
 
 @app.post('/api/login', status_code=status.HTTP_201_CREATED)
 async def login(form_data: UsernamePasswordForm):
-    user_in_db = get_user_by_username(form_data.username)
+    #user_in_db2 = get_user_by_username(form_data.username)
+    user_in_db = conn.execute(users.select().where(users.c.username==form_data.username)).fetchone()
+    user_in_db3 = UserInDbChk(** user_in_db._asdict())
+    # print(type(user_in_db2)) 
+    print(type(user_in_db3))
+    print(user_in_db3)    
 
     if not user_in_db:
         raise HTTPException(
@@ -49,7 +54,7 @@ async def login(form_data: UsernamePasswordForm):
             detail='Password is wrong.',
         )
 
-    return user_in_db
+    return user_in_db3
 
 
 @app.post('/api/users', status_code=status.HTTP_201_CREATED)
@@ -88,8 +93,8 @@ async def create_user(user: UserForm,
 async def get_users(request: Request, response: Response,
                     request_user_id: str = Header(None)):
     
-    #users_list = conn.execute(users.select())
-    users_list = list(get_all_users())    
+    users_list = conn.execute(users.select()).fetchall()
+    #users_list = list(get_all_users())    
     return users_list
 
 

@@ -32,3 +32,17 @@ class UserResponse(BaseModel):
     user_type: str
     hashed_password: str
     created_by: int
+
+class UserResponseChk(BaseModel):
+    id: int
+    username: str = None
+    email: str = None
+    address: str = None
+    state_province: str
+    city: str = None
+    country: str = None
+    zip_code: str
+    hashed_password: str
+    user_type: str
+    banned: int 
+    # profile_picture: str = None

@@ -22,8 +22,9 @@ def generate_access_token(
         'id': data['id'],
         'user_type': data['user_type'],
         'exp': expire,
-        'user_name': data['full_name'],
-        'email': data['email']
+        'name': data['username'],
+        'email': data['email'],
+        'banned': data['banned']
     }
 
     encoded_jwt = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
@@ -45,14 +46,12 @@ def decode_access_token(authorization: str = None):
         raise AuthTokenCorrupted('Auth token is corrupted.')
 
 
-def generate_request_header(token_payload):
-    print(dict(token_payload), "rH")
+def generate_request_header(token_payload):    
     return {'request-user-id': str(token_payload.get("id"))}
 
 
 def is_admin_user(token_payload):    
-    payload = decode_access_token(token_payload.get("access_token"))              
-    print(payload)
+    payload = decode_access_token(token_payload.get("access_token"))                  
     return payload['user_type'] == 'admin'
 
 # def is_admin_user(token_payload):          
