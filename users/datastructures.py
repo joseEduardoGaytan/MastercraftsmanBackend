@@ -39,4 +39,5 @@ class UserInDbChk(BaseModel):
     zip_code: str
     hashed_password: str
     user_type: str
-    banned: int 
+    banned: int
+    profile_picture : str =  None 

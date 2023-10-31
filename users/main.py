@@ -7,7 +7,7 @@ from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserIn
 from fake.db import (get_user_by_username,
                      get_user_by_email,
                      insert_user,
-                     get_all_users,
+                     #get_all_users,
                      get_user_by_id,
                      delete_user_from_db,
                      update_user_in_db)
@@ -36,25 +36,26 @@ app.add_middleware(
 async def login(form_data: UsernamePasswordForm):
     #user_in_db2 = get_user_by_username(form_data.username)
     user_in_db = conn.execute(users.select().where(users.c.username==form_data.username)).fetchone()
-    user_in_db3 = UserInDbChk(** user_in_db._asdict())
+    
     # print(type(user_in_db2)) 
-    print(type(user_in_db3))
-    print(user_in_db3)    
+    # print(type(user_in_db3))
+    # print(user_in_db3)    
 
-    if not user_in_db:
+    if user_in_db ==  None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='User not found with this username.',
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Invalid credentials',
         )
 
     verified = verify_password(form_data.password, user_in_db.hashed_password)
-    if not verified:
+    if not verified :
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Password is wrong.',
+            detail='Invalid credentials',
         )
+    user_in_db = UserInDbChk(** user_in_db._asdict())
 
-    return user_in_db3
+    return user_in_db
 
 
 @app.post('/api/users', status_code=status.HTTP_201_CREATED)
@@ -94,8 +95,11 @@ async def get_users(request: Request, response: Response,
                     request_user_id: str = Header(None)):
     
     users_list = conn.execute(users.select()).fetchall()
-    #users_list = list(get_all_users())    
-    return users_list
+    
+    #users_list = list(get_all_users())
+    print(users_list)    
+    return [UserInDbChk(**user._asdict()) for user in users_list]    
+    #return users_list
 
 
 @app.get('/api/users/{user_id}', status_code=status.HTTP_200_OK)
@@ -144,3 +148,8 @@ async def update_user(user_id: int, user: UserUpdateForm,
 
     user_in_db = update_user_in_db(user_in_db, user)
     return user_in_db
+
+def get_all_users_db():
+    users_list = conn.execute(users.select()).fetchall()
+    for user in users_list:
+        yield(UserInDbChk(** user))

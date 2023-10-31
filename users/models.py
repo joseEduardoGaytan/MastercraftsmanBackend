@@ -14,7 +14,7 @@ users = Table("users", meta,
     Column("hashed_password",String(255),nullable=False ),              
     Column('user_type',String(255), nullable=False),
     Column("banned",Integer,nullable=False),
-    # Column("profile_picture",String(255)),
+    Column("profile_picture",String(255)),
               
 )
 

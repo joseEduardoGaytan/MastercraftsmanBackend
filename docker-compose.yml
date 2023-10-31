@@ -52,4 +52,4 @@ services:
             - ./db/.env
         volumes:
             - mariadb:/var/lib/mysql    
-            - ./data/initial_script.sql:/docker-entrypoint-initdb.d/:ro            
+            - ./db/data/initial_script.sql:/docker-entrypoint-initdb.d/initial_script.sql:ro            

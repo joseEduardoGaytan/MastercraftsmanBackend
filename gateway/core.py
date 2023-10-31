@@ -10,6 +10,8 @@ from exceptions import (AuthTokenMissing, AuthTokenExpired, AuthTokenCorrupted)
 from network import make_request
 
 
+
+
 def route(
         request_method, path: str, status_code: int,
         payload_key: str, service_url: str,
@@ -141,7 +143,12 @@ def route(
                 post_processing_func
             ]):
                 post_processing_f = import_function(post_processing_func)
-                resp_data = post_processing_f(resp_data)
+                resp_data = post_processing_f(resp_data)            
+            if status_code_from_service not in range(200,299,1):                               
+                raise HTTPException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=resp_data                    
+                )
 
             return resp_data
 

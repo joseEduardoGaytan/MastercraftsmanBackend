@@ -45,4 +45,4 @@ class UserResponseChk(BaseModel):
     hashed_password: str
     user_type: str
     banned: int 
-    # profile_picture: str = None
+    profile_picture: str = None
