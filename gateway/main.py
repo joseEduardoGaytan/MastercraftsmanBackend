@@ -51,7 +51,7 @@ async def login(username_password: UsernamePasswordForm,
     authentication_token_decoder='auth.decode_access_token',
     service_authorization_checker='auth.is_admin_user',
     service_header_generator='auth.generate_request_header',
-    response_model='datastructures.users.UserResponse',
+    response_model='datastructures.users.UserResponseChk',
 )
 async def create_user(user: UserForm, request: Request, response: Response):
     pass

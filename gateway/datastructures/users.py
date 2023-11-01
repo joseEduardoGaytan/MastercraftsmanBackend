@@ -7,9 +7,17 @@ class UsernamePasswordForm(BaseModel):
 
 
 class UserForm(UsernamePasswordForm):
-    email: str = None
-    full_name: str = None
+    username: str
+    email: str
+    address: str
+    state_province: str
+    city: str
+    country: str
+    zip_code: str
+    hashed_password: str = None
     user_type: str
+    banned: int
+    profile_picture : str =  None 
 
 
 class UserUpdateForm(BaseModel):
@@ -34,7 +42,7 @@ class UserResponse(BaseModel):
     created_by: int
 
 class UserResponseChk(BaseModel):
-    id: int
+    #id: int
     username: str = None
     email: str = None
     address: str = None
@@ -42,7 +50,7 @@ class UserResponseChk(BaseModel):
     city: str = None
     country: str = None
     zip_code: str
-    hashed_password: str
+    #hashed_password: str
     user_type: str
     banned: int 
     profile_picture: str = None

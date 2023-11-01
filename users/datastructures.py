@@ -6,10 +6,16 @@ class UsernamePasswordForm(BaseModel):
     password: str
 
 
-class UserForm(UsernamePasswordForm):
-    email: str = None
-    full_name: str = None
+class UserForm(UsernamePasswordForm):    
+    email: str
+    address: str
+    state_province: str
+    city: str
+    country: str
+    zip_code: str    
     user_type: str
+    banned: int
+    profile_picture : str =  None 
 
 
 class UserUpdateForm(BaseModel):
@@ -29,7 +35,7 @@ class UserInDb(BaseModel):
     created_by: int
 
 class UserInDbChk(BaseModel):
-    id: int
+    id: int = None
     username: str
     email: str
     address: str

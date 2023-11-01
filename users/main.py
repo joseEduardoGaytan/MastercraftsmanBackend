@@ -4,16 +4,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from auth import verify_password, get_password_hash
 from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDbChk
 
-from fake.db import (get_user_by_username,
-                     get_user_by_email,
-                     insert_user,
-                     #get_all_users,
-                     get_user_by_id,
-                     delete_user_from_db,
-                     update_user_in_db)
+# from fake.db import (get_user_by_username,
+#                      get_user_by_email,
+#                      insert_user,
+#                      #get_all_users,
+#                      get_user_by_id,
+#                      delete_user_from_db,
+#                      update_user_in_db)
 
-from db import conn
+#from db import conn
 from models import users
+from dao import get_all_users, get_user_by_username, insert_user
 
 app = FastAPI()
 PROTECTED_USER_IDS = [1, 2]
@@ -33,14 +34,9 @@ app.add_middleware(
 
 
 @app.post('/api/login', status_code=status.HTTP_201_CREATED)
-async def login(form_data: UsernamePasswordForm):
-    #user_in_db2 = get_user_by_username(form_data.username)
-    user_in_db = conn.execute(users.select().where(users.c.username==form_data.username)).fetchone()
-    
-    # print(type(user_in_db2)) 
-    # print(type(user_in_db3))
-    # print(user_in_db3)    
-
+async def login(form_data: UsernamePasswordForm):        
+    user_in_db = get_user_by_username(form_data.username)
+        
     if user_in_db ==  None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -63,23 +59,32 @@ async def create_user(user: UserForm,
                       request: Request, response: Response,
                       request_user_id: str = Header(None)):
 
-    user_in_db = get_user_by_username(user.username)
-    if user_in_db:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail='There is already another user with this username.',
-        )
+    # user_in_db = get_user_by_username(user.username)
+    # print(type(user))
+    # print(type(user_in_db), "TYPE")
+    # if not user_in_db:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_409_CONFLICT,
+    #         detail='There is already another user with this username.',
+    #     )
 
-    user_in_db = get_user_by_email(user.email)
-    if user_in_db:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail='There is already another user with this email.',
-        )
+    # user_in_db = get_user_by_email(user.email)
+    # if user_in_db:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_409_CONFLICT,
+    #         detail='There is already another user with this email.',
+    #     )
 
-    hashed_password = get_password_hash(user.password)
+    hashed_password = get_password_hash(user.password)    
     data = user.dict()
-    user_in_db = insert_user(data, hashed_password, request_user_id)
+    data['hashed_password']=hashed_password    
+    data.pop('password')
+    user_in_db = insert_user(data) 
+    print("CREATED USER")
+    print(user_in_db)
+    print(type(user_in_db))
+    
+    #user_in_db = insert_user(data, hashed_password, request_user_id)
 
     return user_in_db
 
@@ -92,14 +97,9 @@ async def create_user(user: UserForm,
 
 @app.get('/api/users', status_code=status.HTTP_200_OK)
 async def get_users(request: Request, response: Response,
-                    request_user_id: str = Header(None)):
-    
-    users_list = conn.execute(users.select()).fetchall()
-    
-    #users_list = list(get_all_users())
-    print(users_list)    
-    return [UserInDbChk(**user._asdict()) for user in users_list]    
-    #return users_list
+                    request_user_id: str = Header(None)):    
+    users_list = get_all_users()    
+    return users_list        
 
 
 @app.get('/api/users/{user_id}', status_code=status.HTTP_200_OK)
@@ -148,8 +148,3 @@ async def update_user(user_id: int, user: UserUpdateForm,
 
     user_in_db = update_user_in_db(user_in_db, user)
     return user_in_db
-
-def get_all_users_db():
-    users_list = conn.execute(users.select()).fetchall()
-    for user in users_list:
-        yield(UserInDbChk(** user))
