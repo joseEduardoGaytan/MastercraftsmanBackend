@@ -1,7 +1,7 @@
 import jwt
 
 from datetime import datetime, timedelta
-
+from fastapi import HTTPException, status
 from conf import settings
 from exceptions import AuthTokenMissing, AuthTokenExpired, AuthTokenCorrupted
 
@@ -33,7 +33,11 @@ def generate_access_token(
 
 def decode_access_token(authorization: str = None):
     if not authorization:
-        raise AuthTokenMissing('Auth token is missing in headers.')
+        raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail='Auth token is missing in headers.'                    
+                )
+        #raise AuthTokenMissing('Auth token is missing in headers.')
 
     #token = authorization.replace('Bearer ', '')
     try:                                       
@@ -41,9 +45,17 @@ def decode_access_token(authorization: str = None):
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)                
         return payload
     except jwt.exceptions.ExpiredSignatureError:
-        raise AuthTokenExpired('Auth token is expired.')
+        raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail='Auth token is expired.'                    
+                )
+        #raise AuthTokenExpired('Auth token is expired.')
     except jwt.exceptions.DecodeError:
-        raise AuthTokenCorrupted('Auth token is corrupted.')
+         raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail='Auth token is corrupted.'                    
+                )
+        #raise AuthTokenCorrupted('Auth token is corrupted.')
 
 
 def generate_request_header(token_payload):    

@@ -135,19 +135,19 @@ def route(
                     detail='Service error.',
                     headers={'WWW-Authenticate': 'Bearer'},
                 )
-
+            print(f' STATUS [{status_code}]  -->  {status_code_from_service}')
             response.status_code = status_code_from_service
 
             if all([
                 status_code_from_service == status_code,
                 post_processing_func
             ]):
-                post_processing_f = import_function(post_processing_func)
-                resp_data = post_processing_f(resp_data)            
-            if status_code_from_service not in range(200,299,1):                               
+                post_processing_f = import_function(post_processing_func)                
+                resp_data = post_processing_f(resp_data)                  
+            if status_code_from_service not in range(200,299,1):                                               
                 raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT,
-                    detail=resp_data                    
+                    status_code=status_code_from_service,
+                    detail=resp_data.get('detail')                    
                 )
 
             return resp_data
