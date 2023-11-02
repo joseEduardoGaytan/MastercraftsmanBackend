@@ -13,7 +13,7 @@ from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserIn
 #                      update_user_in_db)
 
 #from db import conn
-from models import users
+#from models import users
 from dao import get_all_users, get_user_by_username, insert_user
 
 app = FastAPI()
@@ -35,22 +35,18 @@ app.add_middleware(
 
 @app.post('/api/login', status_code=status.HTTP_201_CREATED)
 async def login(form_data: UsernamePasswordForm):        
-    user_in_db = get_user_by_username(form_data.username)
-        
+    user_in_db = get_user_by_username(form_data.username)        
     if user_in_db ==  None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Invalid credentials',
         )
-
     verified = verify_password(form_data.password, user_in_db.hashed_password)
     if not verified :
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Invalid credentials',
         )
-    user_in_db = UserInDbChk(** user_in_db._asdict())
-
     return user_in_db
 
 
@@ -59,14 +55,12 @@ async def create_user(user: UserForm,
                       request: Request, response: Response,
                       request_user_id: str = Header(None)):
 
-    # user_in_db = get_user_by_username(user.username)
-    # print(type(user))
-    # print(type(user_in_db), "TYPE")
-    # if not user_in_db:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_409_CONFLICT,
-    #         detail='There is already another user with this username.',
-    #     )
+    user_in_db = get_user_by_username(user.username)     
+    if user_in_db:        
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail='There is already another user with this username.',
+        )
 
     # user_in_db = get_user_by_email(user.email)
     # if user_in_db:
@@ -79,14 +73,9 @@ async def create_user(user: UserForm,
     data = user.dict()
     data['hashed_password']=hashed_password    
     data.pop('password')
-    user_in_db = insert_user(data) 
-    print("CREATED USER")
-    print(user_in_db)
-    print(type(user_in_db))
+    user_in_db = insert_user(data)    
     
-    #user_in_db = insert_user(data, hashed_password, request_user_id)
-
-    return user_in_db
+    return UserInDbChk(**user_in_db.__dict__)
 
 
 # @app.get('/api/users', status_code=status.HTTP_200_OK)

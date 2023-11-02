@@ -1,37 +1,26 @@
-from sqlalchemy import Table, Column
+from sqlalchemy import Table, Column, inspect
 from sqlalchemy.sql.sqltypes import Integer, String, Boolean
 from db import engine, meta
 from datastructures import UserInDbChk
 from sqlalchemy.orm import declarative_base
 
-
-
-users = Table("users", meta, 
-    Column("id",Integer,primary_key=True),
-    Column("username",String(255), unique=True, nullable=False),
-    Column("email",String(255), nullable=False),
-    Column("address",String(255)),
-    Column("state_province",String(255)),
-    Column("city",String(255), nullable=False),
-    Column("country",String(255), ),
-    Column("zip_code",String(255)),
-    Column("hashed_password",String(255),nullable=False ),              
-    Column('user_type',String(255), nullable=False),
-    Column("banned",Integer,nullable=False),
-    Column("profile_picture",String(255)),
-              
-)
-
 Base = declarative_base()
 
-class Todo(Base):
-    __tablename__ = "todos"
+class User(Base):
+    __tablename__ = "users"   
 
     id = Column(Integer, primary_key=True)
-    text = Column(String(255))
-    is_done = Column(Boolean, default=False)
+    username = Column(String(255), unique=True, nullable=False)
+    email = Column(String(255), nullable=False)
+    address = Column(String(255))
+    state_province = Column(String(255))
+    city = Column(String(255), nullable=False)
+    country =Column(String(255))
+    zip_code=Column(String(255))
+    hashed_password = Column(String(255),nullable=False )
+    user_type = Column(String(255), nullable=False)
+    banned = Column(Integer,nullable=False)
+    profile_picture =Column(String(255))
 
 
 Base.metadata.create_all(engine)
-
-#meta.create_all(engine)
