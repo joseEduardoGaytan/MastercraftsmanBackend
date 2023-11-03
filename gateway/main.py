@@ -86,7 +86,7 @@ async def get_users(request: Request, response: Response):
     authentication_token_decoder='auth.decode_access_token',
     service_authorization_checker='auth.is_admin_user',
     service_header_generator='auth.generate_request_header',
-    response_model='datastructures.users.UserResponse',
+    response_model='datastructures.users.UserResponseChk',
 )
 async def get_user(user_id: int, request: Request, response: Response):
     pass
@@ -119,7 +119,7 @@ async def delete_user(user_id: int, request: Request, response: Response):
     authentication_token_decoder='auth.decode_access_token',
     service_authorization_checker='auth.is_admin_user',
     service_header_generator='auth.generate_request_header',
-    response_model='datastructures.users.UserResponse',
+    response_model='datastructures.users.UserResponseChk',
 )
 async def update_user(user_id: int, user: UserUpdateForm,
                       request: Request, response: Response):

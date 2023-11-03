@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, status, Request, Response, Header
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 from auth import verify_password, get_password_hash
 from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDbChk
 
@@ -14,7 +14,7 @@ from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserIn
 
 #from db import conn
 #from models import users
-from dao import get_all_users, get_user_by_username, insert_user
+from dao import get_all_users, get_user_by_username, insert_user, get_user_by_id, update_user_in_db, delete_user_in_db
 
 app = FastAPI()
 PROTECTED_USER_IDS = [1, 2]
@@ -99,7 +99,7 @@ async def get_user(user_id: int, request: Request, response: Response,
     if not user_in_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='User not found with this id.',
+            detail='User not found.',
         )
     return user_in_db
 
@@ -108,19 +108,15 @@ async def get_user(user_id: int, request: Request, response: Response,
 async def delete_user(user_id: int, request: Request, response: Response,
                       request_user_id: str = Header(None)):
 
-    if user_id in PROTECTED_USER_IDS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail='You are not allowed to delete protected users.',
-        )
-
-    user_in_db = get_user_by_id(user_id)
-    if not user_in_db:
+    if not delete_user_in_db(user_id):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='User not found with this id.',
+            detail='User cannot be deleted',
         )
-    delete_user_from_db(user_id)
+    return JSONResponse(content={"message":'user has been deleted'}) 
+    
+
+
 
 
 @app.put('/api/users/{user_id}', status_code=status.HTTP_200_OK)
@@ -128,12 +124,11 @@ async def update_user(user_id: int, user: UserUpdateForm,
                       request: Request, response: Response,
                       request_user_id: str = Header(None)):
 
-    user_in_db = get_user_by_id(user_id)
-    if not user_in_db:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail='There is already another user with this username.',
-        )
-
-    user_in_db = update_user_in_db(user_in_db, user)
+    # user_in_db = get_user_by_id(user_id)      
+    # if not user_in_db:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_409_CONFLICT,
+    #         detail='There is already another user with this username.',
+    #     )
+    user_in_db = update_user_in_db(user_id, user)
     return user_in_db

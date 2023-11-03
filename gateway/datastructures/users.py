@@ -21,10 +21,17 @@ class UserForm(UsernamePasswordForm):
 
 
 class UserUpdateForm(BaseModel):
-    username: str = None
-    email: str = None
-    full_name: str = None
-    user_type: str = None
+    username: str 
+    email: str 
+    address: str 
+    state_province: str 
+    city: str 
+    country: str 
+    zip_code: str 
+    hashed_password: str = None
+    user_type: str 
+    banned: int = None
+    profile_picture : str =  None 
 
 
 class LoginResponse(BaseModel):
