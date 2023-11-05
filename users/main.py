@@ -64,7 +64,7 @@ async def create_user(user: UserForm,
 async def get_users(request: Request, response: Response,
                     request_user_id: str = Header(None)):    
     users_list = get_all_users()    
-    return users_list        
+    return users_list    
 
 
 @app.get('/api/users/{user_id}', status_code=status.HTTP_200_OK)
