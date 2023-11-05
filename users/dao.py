@@ -1,6 +1,6 @@
 
 from db import engine, session
-from datastructures import UserInDbChk
+from datastructures import UserInDb
 from models import User
 
 
@@ -38,7 +38,7 @@ def insert_user(data: dict):
     session.add(new_user)
     session.commit()
     session.refresh(new_user)     
-    return new_users
+    return new_user
 
 def delete_user_in_db(user_id: int):
     user_in_db = get_user_by_id(user_id)

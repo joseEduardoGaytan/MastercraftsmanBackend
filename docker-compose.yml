@@ -15,8 +15,7 @@ services:
         ports:
           - 8001:8000
         depends_on:
-          - users
-        #   - orders
+          - users        
         volumes:
           - ./gateway:/app
 
@@ -33,16 +32,6 @@ services:
         volumes:
           - ./users:/app
 
-    # orders:
-    #     image: krakenstdio/k-orders:latest
-    #     command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
-    #     build:
-    #         context: ./orders
-    #         dockerfile: Dockerfile
-    #     env_file:
-    #         - ./orders/.env
-    #     volumes:
-    #       - ./orders:/app
     db:
         image: mariadb
         restart: always

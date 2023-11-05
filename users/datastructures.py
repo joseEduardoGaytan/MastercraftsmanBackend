@@ -34,15 +34,6 @@ class UserUpdateForm(BaseModel):
 
 
 class UserInDb(BaseModel):
-    id: int
-    username: str
-    email: str = None
-    full_name: str = None
-    user_type: str
-    hashed_password: str
-    created_by: int
-
-class UserInDbChk(BaseModel):
     id: int = None
     username: str
     email: str

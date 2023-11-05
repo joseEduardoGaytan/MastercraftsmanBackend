@@ -2,18 +2,8 @@ from fastapi import FastAPI, HTTPException, status, Request, Response, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from auth import verify_password, get_password_hash
-from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDbChk
+from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDb
 
-# from fake.db import (get_user_by_username,
-#                      get_user_by_email,
-#                      insert_user,
-#                      #get_all_users,
-#                      get_user_by_id,
-#                      delete_user_from_db,
-#                      update_user_in_db)
-
-#from db import conn
-#from models import users
 from dao import get_all_users, get_user_by_username, insert_user, get_user_by_id, update_user_in_db, delete_user_in_db
 
 app = FastAPI()
@@ -62,27 +52,13 @@ async def create_user(user: UserForm,
             detail='There is already another user with this username.',
         )
 
-    # user_in_db = get_user_by_email(user.email)
-    # if user_in_db:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_409_CONFLICT,
-    #         detail='There is already another user with this email.',
-    #     )
-
     hashed_password = get_password_hash(user.password)    
     data = user.dict()
     data['hashed_password']=hashed_password    
     data.pop('password')
     user_in_db = insert_user(data)    
     
-    return UserInDbChk(**user_in_db.__dict__)
-
-
-# @app.get('/api/users', status_code=status.HTTP_200_OK)
-# async def get_users(request: Request, response: Response,
-#                     request_user_id: str = Header(None)):
-#     users = list(get_all_users())
-#     return users
+    return UserInDb(**user_in_db.__dict__)
 
 @app.get('/api/users', status_code=status.HTTP_200_OK)
 async def get_users(request: Request, response: Response,
@@ -124,11 +100,8 @@ async def update_user(user_id: int, user: UserUpdateForm,
                       request: Request, response: Response,
                       request_user_id: str = Header(None)):
 
-    # user_in_db = get_user_by_id(user_id)      
-    # if not user_in_db:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_409_CONFLICT,
-    #         detail='There is already another user with this username.',
-    #     )
     user_in_db = update_user_in_db(user_id, user)
+    if user_in_db == None:        
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        detail='User not found')
     return user_in_db

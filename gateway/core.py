@@ -62,6 +62,7 @@ def route(
         @functools.wraps(f)
         async def inner(request: Request, response: Response, **kwargs):
             service_headers = {}
+            token_payload = {}
 
             if authentication_required:
                 # authentication
@@ -82,11 +83,11 @@ def route(
                     if exc:
                         raise HTTPException(
                             status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail=exc+" exception22",
+                            detail=exc+" exception",
                             headers={'WWW-Authenticate': 'Bearer'},
                         )
 
-                # authorization
+                # authorization                
                 if service_authorization_checker:
                     authorization_checker = import_function(
                         service_authorization_checker
@@ -134,8 +135,7 @@ def route(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail='Service error.',
                     headers={'WWW-Authenticate': 'Bearer'},
-                )
-            print(f' STATUS [{status_code}]  -->  {status_code_from_service}')
+                )            
             response.status_code = status_code_from_service
 
             if all([

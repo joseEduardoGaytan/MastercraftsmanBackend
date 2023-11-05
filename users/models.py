@@ -1,7 +1,7 @@
 from sqlalchemy import Table, Column, inspect
 from sqlalchemy.sql.sqltypes import Integer, String, Boolean
 from db import engine, meta
-from datastructures import UserInDbChk
+from datastructures import UserInDb
 from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()

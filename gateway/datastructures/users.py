@@ -40,15 +40,6 @@ class LoginResponse(BaseModel):
 
 
 class UserResponse(BaseModel):
-    id: int
-    username: str
-    email: str = None
-    full_name: str = None
-    user_type: str
-    hashed_password: str
-    created_by: int
-
-class UserResponseChk(BaseModel):
     #id: int
     username: str = None
     email: str = None
