@@ -1,51 +1,42 @@
 
-from db import engine, session
 from datastructures import UserInDb
-from models import User
+from models import User, User_Pydantic, UserIn_Pydantic
 
 
-def get_all_users():
-    user_list = session.query(User).filter(User.banned==0).all()
+async def get_all_users():
+    user_list = await UserIn_Pydantic.from_queryset(User.all())    
     return user_list
 
-def get_user_by_username(user_name:  str):    
-    user = session.query(User).filter(User.username == user_name).first()    
-    if user:
-        return user
+async def get_user_by_username(user_name:  str):
+    user_exists = await User.get_or_none(username=user_name).exists()    
+    if user_exists:        
+        return await User_Pydantic.from_queryset_single(User.get(username=user_name))            
     return None
     
-def get_user_by_id(user_id: int):
-    user = session.query(User).filter(User.id == user_id).first()    
-    if user:
-        return user
+async def get_user_by_id(user_id: int):
+    user_exists = await User.get_or_none(id=user_id).exists()    
+    if user_exists:        
+        return await User_Pydantic.from_queryset_single(User.get(id=user_id))            
     return None
 
-def update_user_in_db(user_id: int, data: dict):
-    user_in_db = get_user_by_id(user_id)
-    if user_in_db:
-        for attribute, value in data:
-            if value is not None:
-                setattr(user_in_db, attribute, value)        
-        session.add(user_in_db)        
-        session.commit()
-        session.refresh(user_in_db)
+#TODO validate attributes id and username not in data/or duplicate username
+async def update_user_in_db(user_id: int, data: User_Pydantic):
+    user_exists = await User.get_or_none(id=user_id).exists()
+    if user_exists:                                           
+        await User.filter(id=user_id).update(**data.dict(exclude_none=True,exclude_unset=True))        
+        return await get_user_by_id(user_id)                     
     else:
         return None
-    return user_in_db
+    
+async def insert_user(data: dict):           
+    user_obj = await User.create(**data)    
+    return await User_Pydantic.from_tortoise_orm(user_obj)
 
-def insert_user(data: dict):    
-    new_user = User(**data)    
-    session.add(new_user)
-    session.commit()
-    session.refresh(new_user)     
-    return new_user
-
-def delete_user_in_db(user_id: int):
-    user_in_db = get_user_by_id(user_id)
-    if user_in_db:
-        session.delete(user_in_db)
-        session.commit()
-        return True
-    return False
+async def delete_user_in_db(user_id: int):
+    user_exists = await User.get_or_none(id=user_id).exists()
+    if not user_exists:                                                
+        return False
+    return await User.filter(id=user_id).delete()
+    
 
 

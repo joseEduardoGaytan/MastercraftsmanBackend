@@ -1,6 +1,12 @@
-from sqlalchemy import create_engine, MetaData
-engine = create_engine("mysql+pymysql://master:craft@db/demo")
-meta = MetaData()
-from sqlalchemy.orm import sessionmaker
-Session = sessionmaker(bind=engine)
-session = Session()
+from tortoise import Tortoise, run_async
+#TODO crate db_url from .env files
+async def init():    
+    await Tortoise.init(
+        db_url='mysql://master:craft@db:3306/demo',
+        modules={'models': ['models']}
+    )
+
+    # Generate the schema
+    await Tortoise.generate_schemas()    
+run_async(init())
+
