@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class UsernamePasswordForm(BaseModel):
@@ -7,16 +8,31 @@ class UsernamePasswordForm(BaseModel):
 
 
 class UserForm(UsernamePasswordForm):
-    email: str = None
-    full_name: str = None
+    username: str
+    email: str
+    address: str
+    state_province: str
+    city: str
+    country: str
+    zip_code: str
+    hashed_password: str = None
     user_type: str
+    banned: int
+    profile_picture : str =  None 
 
 
 class UserUpdateForm(BaseModel):
-    username: str = None
-    email: str = None
-    full_name: str = None
-    user_type: str = None
+    username: str 
+    email: str 
+    address: str 
+    state_province: str 
+    city: str 
+    country: str 
+    zip_code: str 
+    hashed_password: str = None
+    user_type: str 
+    banned: int = None
+    profile_picture : str =  None 
 
 
 class LoginResponse(BaseModel):
@@ -24,11 +40,14 @@ class LoginResponse(BaseModel):
     token_type: str
 
 
-class UserResponse(BaseModel):
-    id: int
-    username: str
+class UserResponse(BaseModel):        
+    username: str = None
     email: str = None
-    full_name: str = None
-    user_type: str
-    hashed_password: str
-    created_by: int
+    address: str = None
+    state_province: str = None
+    city: str = None
+    country: str = None
+    zip_code: str = None    
+    user_type: str = None
+    banned: int = None
+    profile_picture: str = None

@@ -1,4 +1,7 @@
-version: '3.7'
+version: '3.11'
+
+volumes:
+    mariadb:
 
 services:
     gateway:
@@ -12,8 +15,7 @@ services:
         ports:
           - 8001:8000
         depends_on:
-          - users
-          - orders
+          - users        
         volumes:
           - ./gateway:/app
 
@@ -23,18 +25,20 @@ services:
         build:
             context: ./users
             dockerfile: Dockerfile
+        depends_on:
+            - db
         env_file:
             - ./users/.env
         volumes:
           - ./users:/app
 
-    orders:
-        image: krakenstdio/k-orders:latest
-        command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
-        build:
-            context: ./orders
-            dockerfile: Dockerfile
+    db:
+        image: mariadb
+        restart: always
+        ports: 
+            - 3307:3306
         env_file:
-            - ./orders/.env
+            - ./db/.env
         volumes:
-          - ./orders:/app
+            - mariadb:/var/lib/mysql    
+            - ./db/data/initial_script.sql:/docker-entrypoint-initdb.d/initial_script.sql:ro            

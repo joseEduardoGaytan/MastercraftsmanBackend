@@ -10,6 +10,8 @@ from exceptions import (AuthTokenMissing, AuthTokenExpired, AuthTokenCorrupted)
 from network import make_request
 
 
+
+
 def route(
         request_method, path: str, status_code: int,
         payload_key: str, service_url: str,
@@ -60,6 +62,7 @@ def route(
         @functools.wraps(f)
         async def inner(request: Request, response: Response, **kwargs):
             service_headers = {}
+            token_payload = {}
 
             if authentication_required:
                 # authentication
@@ -76,15 +79,15 @@ def route(
                     # in case a new decoder is used by dependency injection and
                     # there might be an unexpected error
                     exc = str(e)
-                finally:
+                finally:                    
                     if exc:
                         raise HTTPException(
                             status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail=exc,
+                            detail=exc+" exception",
                             headers={'WWW-Authenticate': 'Bearer'},
                         )
 
-                # authorization
+                # authorization                
                 if service_authorization_checker:
                     authorization_checker = import_function(
                         service_authorization_checker
@@ -132,16 +135,20 @@ def route(
                     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     detail='Service error.',
                     headers={'WWW-Authenticate': 'Bearer'},
-                )
-
+                )            
             response.status_code = status_code_from_service
 
             if all([
                 status_code_from_service == status_code,
                 post_processing_func
             ]):
-                post_processing_f = import_function(post_processing_func)
-                resp_data = post_processing_f(resp_data)
+                post_processing_f = import_function(post_processing_func)                
+                resp_data = post_processing_f(resp_data)                  
+            if status_code_from_service not in range(200,299,1):                                               
+                raise HTTPException(
+                    status_code=status_code_from_service,
+                    detail=resp_data.get('detail')                    
+                )
 
             return resp_data
 

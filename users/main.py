@@ -1,16 +1,11 @@
 from fastapi import FastAPI, HTTPException, status, Request, Response, Header
 from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi.responses import JSONResponse
 from auth import verify_password, get_password_hash
-from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm
+from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDb
+from tortoise.contrib.fastapi import register_tortoise
 
-from fake.db import (get_user_by_username,
-                     get_user_by_email,
-                     insert_user,
-                     get_all_users,
-                     get_user_by_id,
-                     delete_user_from_db,
-                     update_user_in_db)
+from dao import get_all_users, get_user_by_username, insert_user, get_user_by_id, update_user_in_db, delete_user_in_db
 
 app = FastAPI()
 PROTECTED_USER_IDS = [1, 2]
@@ -30,22 +25,19 @@ app.add_middleware(
 
 
 @app.post('/api/login', status_code=status.HTTP_201_CREATED)
-async def login(form_data: UsernamePasswordForm):
-    user_in_db = get_user_by_username(form_data.username)
-
-    if not user_in_db:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail='User not found with this username.',
-        )
-
-    verified = verify_password(form_data.password, user_in_db.hashed_password)
-    if not verified:
+async def login(form_data: UsernamePasswordForm):        
+    user_in_db = await get_user_by_username(form_data.username)    
+    if user_in_db ==  None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail='Password is wrong.',
+            detail='Invalid credentials',
         )
-
+    verified = verify_password(form_data.password, user_in_db.hashed_password)
+    if not verified :
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Invalid credentials',
+        )
     return user_in_db
 
 
@@ -54,32 +46,26 @@ async def create_user(user: UserForm,
                       request: Request, response: Response,
                       request_user_id: str = Header(None)):
 
-    user_in_db = get_user_by_username(user.username)
-    if user_in_db:
+    user_in_db = await get_user_by_username(user.username)        
+    if user_in_db:        
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail='There is already another user with this username.',
         )
 
-    user_in_db = get_user_by_email(user.email)
-    if user_in_db:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail='There is already another user with this email.',
-        )
-
-    hashed_password = get_password_hash(user.password)
+    hashed_password = get_password_hash(user.password)    
     data = user.dict()
-    user_in_db = insert_user(data, hashed_password, request_user_id)
-
+    data['hashed_password']=hashed_password    
+    data.pop('password')    
+    user_in_db = await insert_user(data)    
+    
     return user_in_db
-
 
 @app.get('/api/users', status_code=status.HTTP_200_OK)
 async def get_users(request: Request, response: Response,
-                    request_user_id: str = Header(None)):
-    users = list(get_all_users())
-    return users
+                    request_user_id: str = Header(None)):    
+    users_list = await get_all_users()    
+    return users_list    
 
 
 @app.get('/api/users/{user_id}', status_code=status.HTTP_200_OK)
@@ -90,7 +76,7 @@ async def get_user(user_id: int, request: Request, response: Response,
     if not user_in_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='User not found with this id.',
+            detail='User not found.',
         )
     return user_in_db
 
@@ -98,33 +84,35 @@ async def get_user(user_id: int, request: Request, response: Response,
 @app.delete('/api/users/{user_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: int, request: Request, response: Response,
                       request_user_id: str = Header(None)):
-
-    if user_id in PROTECTED_USER_IDS:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail='You are not allowed to delete protected users.',
-        )
-
-    user_in_db = get_user_by_id(user_id)
-    if not user_in_db:
+    deleted = await delete_user_in_db(user_id)    
+    if not deleted:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail='User not found with this id.',
+            detail='User cannot be deleted',
         )
-    delete_user_from_db(user_id)
+    else:
+        return JSONResponse(content={"message":'user has been deleted'}) 
+    
+
+
 
 
 @app.put('/api/users/{user_id}', status_code=status.HTTP_200_OK)
 async def update_user(user_id: int, user: UserUpdateForm,
                       request: Request, response: Response,
                       request_user_id: str = Header(None)):
-
-    user_in_db = get_user_by_id(user_id)
-    if not user_in_db:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail='There is already another user with this username.',
-        )
-
-    user_in_db = update_user_in_db(user_in_db, user)
+    
+    user_in_db = await get_user_by_id(user_id)    
+    if user_in_db == None:        
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+        detail='User not found')
+    user_in_db = await update_user_in_db(user_id,user)        
     return user_in_db
+
+register_tortoise(
+    app,
+    db_url='mysql://master:craft@db:3306/demo',
+    modules={'models': ['models']},
+    generate_schemas=False,
+    add_exception_handlers=True,
+)
