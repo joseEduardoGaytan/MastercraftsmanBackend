@@ -10,6 +10,8 @@ class UsernamePasswordForm(BaseModel):
 class UserForm(UsernamePasswordForm):    
     email: str
     address: str
+    first_name: str 
+    last_name: str 
     state_province: str
     city: str
     country: str
@@ -22,7 +24,9 @@ class UserForm(UsernamePasswordForm):
 class UserUpdateForm(BaseModel):    
     username: Optional[str] 
     email: str 
-    address: str 
+    address: str
+    first_name: str 
+    last_name: str 
     state_province: str 
     city: str 
     country: str 
@@ -33,16 +37,3 @@ class UserUpdateForm(BaseModel):
     profile_picture : Optional[str] 
 
 
-class UserInDb(BaseModel):
-    id: int = None
-    username: str
-    email: str
-    address: str
-    state_province: str
-    city: str
-    country: str
-    zip_code: str
-    hashed_password: str
-    user_type: str
-    banned: int
-    profile_picture : str =  None 

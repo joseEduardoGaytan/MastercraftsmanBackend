@@ -2,13 +2,13 @@ from fastapi import FastAPI, HTTPException, status, Request, Response, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from auth import verify_password, get_password_hash
-from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm,UserInDb
+from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm
 from tortoise.contrib.fastapi import register_tortoise
 
 from dao import get_all_users, get_user_by_username, insert_user, get_user_by_id, update_user_in_db, delete_user_in_db
 
 app = FastAPI()
-PROTECTED_USER_IDS = [1, 2]
+
 
 origins = [
     "http://localhost",
@@ -72,7 +72,7 @@ async def get_users(request: Request, response: Response,
 async def get_user(user_id: int, request: Request, response: Response,
                    request_user_id: str = Header(None)):
 
-    user_in_db = get_user_by_id(user_id)
+    user_in_db = await get_user_by_id(user_id)
     if not user_in_db:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -92,11 +92,7 @@ async def delete_user(user_id: int, request: Request, response: Response,
         )
     else:
         return JSONResponse(content={"message":'user has been deleted'}) 
-    
-
-
-
-
+        
 @app.put('/api/users/{user_id}', status_code=status.HTTP_200_OK)
 async def update_user(user_id: int, user: UserUpdateForm,
                       request: Request, response: Response,
@@ -113,6 +109,6 @@ register_tortoise(
     app,
     db_url='mysql://master:craft@db:3306/demo',
     modules={'models': ['models']},
-    generate_schemas=False,
+    generate_schemas=True,
     add_exception_handlers=True,
 )

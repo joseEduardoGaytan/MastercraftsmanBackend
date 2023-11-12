@@ -4,6 +4,8 @@
 --   `username` varchar(255) NOT NULL,
 --   `email` varchar(255) NOT NULL,
 --   `address` varchar(255) NOT NULL,
+--   `first_name` varchar(255) NOT NULL,
+--   `last_name` varchar(255) NOT NULL,
 --   `state_province` varchar(255) NOT NULL,
 --   `city` varchar(255) NOT NULL,
 --   `country` varchar(255) NOT NULL,
@@ -15,4 +17,4 @@
 --   PRIMARY KEY (`id`),
 --   UNIQUE KEY `username` (`username`)
 -- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
--- insert into users values (null,'admin','admin@master.com','5th ave # 21','zacatecas','mx','gpe', '9802','$2b$12$16kNu5IW80k1Tw7xz2H3iOCsz0.oMZ7q5OSGa/OIfOae0WGFe8aI2','admin',1,'')
+-- insert into users values (null,'admin','admin@master.com','5th ave # 21','jhon','doe','zacatecas','zacatecas','mexico', '9802','$2b$12$16kNu5IW80k1Tw7xz2H3iOCsz0.oMZ7q5OSGa/OIfOae0WGFe8aI2','admin',0,'')
