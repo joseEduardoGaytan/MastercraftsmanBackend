@@ -6,7 +6,9 @@ from datastructures import UsernamePasswordForm, UserForm, UserUpdateForm
 from tortoise.contrib.fastapi import register_tortoise
 
 from dao import get_all_users, get_user_by_username, insert_user, get_user_by_id, update_user_in_db, delete_user_in_db
+from dotenv import dotenv_values
 
+config = dotenv_values("users.env")
 app = FastAPI()
 
 
@@ -107,7 +109,7 @@ async def update_user(user_id: int, user: UserUpdateForm,
 
 register_tortoise(
     app,
-    db_url='mysql://master:craft@db:3306/demo',
+    db_url=config['DB_URL'],
     modules={'models': ['models']},
     generate_schemas=True,
     add_exception_handlers=True,

@@ -37,12 +37,15 @@ services:
         restart: always
         ports: 
             - 3307:3306
+        
+        env_file:
+            - ./db/.env
     
         environment:
-            -MYSQL_ROOT_PASSWORD : 'm4st3rcr4ft'
-            -MYSQL_DATABASE: 'demo'
-            -MYSQL_USER: 'master'
-            -MYSQL_PASSWORD: 'craft'
+            -MYSQL_ROOT_PASSWORD : '$MYSQL_ROOT_PASSWORD'
+            -MYSQL_DATABASE: '$MYSQL_DATABASE'
+            -MYSQL_USER: '$MYSQL_USER'
+            -MYSQL_PASSWORD: '$MYSQL_PASSWORD'
 
         volumes:
             - mariadb:/var/lib/mysql
