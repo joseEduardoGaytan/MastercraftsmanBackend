@@ -11,6 +11,8 @@ class UserForm(UsernamePasswordForm):
     username: str
     email: str
     address: str
+    first_name: str 
+    last_name: str
     state_province: str
     city: str
     country: str
@@ -25,6 +27,8 @@ class UserUpdateForm(BaseModel):
     username: str 
     email: str 
     address: str 
+    first_name: str 
+    last_name: str 
     state_province: str 
     city: str 
     country: str 
@@ -40,10 +44,13 @@ class LoginResponse(BaseModel):
     token_type: str
 
 
-class UserResponse(BaseModel):        
+class UserResponse(BaseModel):
+    id: Optional[int] = None        
     username: str = None
     email: str = None
     address: str = None
+    first_name: str = None
+    last_name: str = None
     state_province: str = None
     city: str = None
     country: str = None

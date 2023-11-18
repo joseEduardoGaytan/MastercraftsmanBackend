@@ -6,7 +6,7 @@ volumes:
 services:
     gateway:
         image: krakenstdio/k-api-gateway:latest
-        command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
+        command: sh -c 'uvicorn main:app --reload --host 0.0.0.0'
         build:
             context: ./gateway
             dockerfile: Dockerfile
@@ -21,7 +21,7 @@ services:
 
     users:
         image: krakenstdio/k-users:latest
-        command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
+        command: sh -c 'uvicorn main:app --reload --host 0.0.0.0'
         build:
             context: ./users
             dockerfile: Dockerfile
@@ -37,8 +37,17 @@ services:
         restart: always
         ports: 
             - 3307:3306
+        
         env_file:
             - ./db/.env
+    
+        # environment:
+        #     -MYSQL_ROOT_PASSWORD : '$MYSQL_ROOT_PASSWORD'
+        #     -MYSQL_DATABASE: '$MYSQL_DATABASE'
+        #     -MYSQL_USER: '$MYSQL_USER'
+        #     -MYSQL_PASSWORD: '$MYSQL_PASSWORD'
+
         volumes:
-            - mariadb:/var/lib/mysql    
+            - mariadb:/var/lib/mysql
+            #Todo fix load init script    
             - ./db/data/initial_script.sql:/docker-entrypoint-initdb.d/initial_script.sql:ro            

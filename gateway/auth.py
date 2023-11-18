@@ -4,10 +4,12 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException, status
 from conf import settings
 from exceptions import AuthTokenMissing, AuthTokenExpired, AuthTokenCorrupted
+from dotenv import dotenv_values
 
+config = dotenv_values(".env")
 
-SECRET_KEY = 'e0e5f53b239df3dc39517c34ae0a1c09d1f5d181dfac1578d379a4a5ee3e0ef5'
-ALGORITHM = 'HS256'
+SECRET_KEY = config['JWT_SECRET_KEY']
+ALGORITHM = config['JWT_ALGORITHM']
 
 
 def generate_access_token(

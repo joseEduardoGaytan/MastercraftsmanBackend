@@ -1,5 +1,4 @@
 
-from datastructures import UserInDb
 from models import User, User_Pydantic, UserIn_Pydantic
 
 
