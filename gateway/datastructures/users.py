@@ -44,7 +44,8 @@ class LoginResponse(BaseModel):
     token_type: str
 
 
-class UserResponse(BaseModel):        
+class UserResponse(BaseModel):
+    id: Optional[int] = None        
     username: str = None
     email: str = None
     address: str = None
