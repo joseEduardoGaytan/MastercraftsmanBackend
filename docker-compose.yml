@@ -15,7 +15,8 @@ services:
         ports:
           - 8001:8000
         depends_on:
-          - users        
+          - users
+          - contractors        
         volumes:
           - ./gateway:/app
 
@@ -31,6 +32,19 @@ services:
             - ./users/.env
         volumes:
           - ./users:/app
+
+    contractors:
+        image: krakenstdio/k-contractors:latest
+        command: sh -c 'uvicorn main:app --reload --host 0.0.0.0'
+        build:
+            context: ./contractors
+            dockerfile: Dockerfile
+        depends_on:
+            - db
+        env_file:
+            - ./contractors/.env
+        volumes:
+          - ./contractors:/app
 
     db:
         image: mariadb

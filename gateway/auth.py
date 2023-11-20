@@ -68,4 +68,6 @@ def is_admin_user(token_payload):
 
 
 def is_default_user(token_payload):
+    #Todo fix bug when in gateway main.py line 138.     
+    # service_authorization_checker='auth.is_default_user',
     return token_payload['user_type'] in ['default', 'admin']
