@@ -1,6 +1,6 @@
 from tortoise.models import Model
 from tortoise import fields, Tortoise
-from tortoise.contrib.pydantic import pydantic_model_creator
+from tortoise.contrib.pydantic import pydantic_model_creator, pydantic_queryset_creator
 from pydantic import BaseModel
 
 class TypeOfWork(Model):
@@ -37,14 +37,17 @@ class Contractor(Model):
     # tournament: fields.ForeignKeyRelation[Tournament] = fields.ForeignKeyField(
     #     "models.Tournament", related_name="events", description="The Tournament this happens in"
     # )
-
-    type_of_work : fields.ForeignKeyRelation[TypeOfWork] = fields.ForeignKeyField('models.TypeOfWork', related_name='typeofworks')
+    typeofwork: fields.ForeignKeyRelation[TypeOfWork] = fields.ForeignKeyField(
+        "models.TypeOfWork", related_name="typeofworks"
+    )
+    #typeofworks : fields.ForeignKeyRelation[TypeOfWork] = fields.ForeignKeyField('models.TypeOfWork', related_name='typeofworks')
     
 
 
 Tortoise.init_models(["models"], "models")
 
 Contractor_Pydantic = pydantic_model_creator(Contractor,name='Contractor')
+Contractor_Pydantic_List = pydantic_queryset_creator(Contractor)
 ContractorIn_Pydantic = pydantic_model_creator(Contractor, name='ContractorIn', exclude_readonly=True)
 TypeOfWork_Pydantic = pydantic_model_creator(TypeOfWork, name='TypeOfWork')
 TypeOfWorkIn_Pydantic = pydantic_model_creator(TypeOfWork, name='TypeOfWorkIn')

@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from tortoise.contrib.fastapi import register_tortoise
 from dotenv import dotenv_values
-from dao import get_all_contractors
+from datastructures import ContractorsForm
+from dao import get_all_contractors, insert_contractor
 
 
 config = dotenv_values(".env")
@@ -23,14 +24,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#enpints hire
 @app.get('/api/contractors', status_code=status.HTTP_200_OK)
 async def get_contractors(request: Request, response: Response,
                     request_user_id: str = Header(None)):
     contractor_list = await get_all_contractors()    
     return contractor_list
-    
 
+@app.post('/api/contractors', status_code=status.HTTP_201_CREATED)
+async def create_contractor(contractor: ContractorsForm,
+                      request: Request, response: Response,
+                      request_user_id: str = Header(None)):        
+    contractor = await insert_contractor(contractor.dict())        
+    return contractor
 
 register_tortoise(
     app,
