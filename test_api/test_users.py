@@ -49,7 +49,7 @@ def test_can_create_update_delete_users():
     response_user_create = requests.post(API_URL+'/api/users',headers=auth_token, json=payload)        
     assert response_user_create.status_code == 201    
         
-    #get user with user_id create febore
+    #get user with user_id create before
     user_data =  response_user_create.json()    
     user_id = user_data['id']
     response_user_get = requests.get(API_URL+f'/api/users/{user_id}',headers=auth_token)

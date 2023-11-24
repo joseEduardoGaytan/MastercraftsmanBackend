@@ -5,8 +5,8 @@ async def get_all_contractors():
     contractors_list = await Contractor_Pydantic.from_queryset(Contractor.all())    
     return contractors_list
 
-async def get_contractor_by_id(contractor_id: int):    
-    contractor_exists = await Contractor.get_or_none(id=contractor_id).exists()    
+async def get_contractor_by_id(contractor_id: int):      
+    contractor_exists = await Contractor.get_or_none(id=contractor_id).exists()
     if contractor_exists:        
         return await Contractor_Pydantic.from_queryset_single(Contractor.get(id=contractor_id))            
     return None

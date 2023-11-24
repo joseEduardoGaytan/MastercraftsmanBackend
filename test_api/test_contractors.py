@@ -17,10 +17,23 @@ def test_can_list_contractors():
     
 #Tests can manage contractors
 def test_can_create_update_delete_contractors():
-    payload={'owner_name' :  f'a{random.randint(1,10000)}','business_name' : 'a', 'certifications' : 'a', 'size_of_enterprice' :'a','availability' : 'a','rage_of_area' : '{}','state_province' : 'a', 'city' : 'a', 'country' : 'a', 'zip_code' : 'a', 'profile_picture'  : 'a', 'typeofwork_id' : 1}
     
+    #Create contractor
+    payload={'owner_name' :  f'a{random.randint(1,10000)}','business_name' : 'a', 'certifications' : 'a', 'size_of_enterprice' :'a','availability' : 'a','rage_of_area' : '{}','state_province' : 'a', 'city' : 'a', 'country' : 'a', 'zip_code' : 'a', 'profile_picture'  : 'a', 'typeofwork_id' : 1}    
     response_contractor_create = requests.post(API_URL+'/api/contractors',headers=auth_token, json=payload)    
     assert response_contractor_create.status_code == 201
     
+    #Get contractor  with create contractor before
+    contractor_data = response_contractor_create.json()
+    contractor_id = contractor_data['id']
+    response_contractor_get = requests.get(API_URL+f'/api/contractors/{contractor_id}',headers=auth_token)
+    assert response_contractor_get.status_code ==  200    
+    assert contractor_data == response_contractor_get.json()
     
-    pass
+    #Update contractor
+    contractor_data['business_name']="master constructor"
+    response_user_update = requests.put(API_URL+f'/api/contractors/{contractor_id}',headers=auth_token, json=contractor_data)
+    assert response_user_update.status_code == 200
+    assert response_user_update.json()['business_name'] == "master constructor"
+    
+    

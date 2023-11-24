@@ -161,3 +161,36 @@ async def get_contractors(request: Request, response: Response):
 )
 async def create_contractor(contractor: ContractorsForm, request: Request, response: Response):
     pass
+
+@route(
+    request_method=app.get,
+    path='/api/contractors/{contractor_id}',
+    status_code=status.HTTP_200_OK,
+    payload_key=None,
+    service_url=settings.CONTRACTORS_SERVICE_URL,
+    authentication_required=True,
+    post_processing_func=None,
+    authentication_token_decoder='auth.decode_access_token',
+    service_authorization_checker='auth.is_admin_user',
+    service_header_generator='auth.generate_request_header',
+    response_model='datastructures.contractors.ContractorsResponse',
+)
+async def get_contractor(contractor_id: int, request: Request, response: Response):
+    pass
+
+@route(
+    request_method=app.put,
+    path='/api/contractors/{contractor_id}',
+    status_code=status.HTTP_200_OK,
+    payload_key='contractor_form',
+    service_url=settings.CONTRACTORS_SERVICE_URL,
+    authentication_required=True,
+    post_processing_func=None,
+    authentication_token_decoder='auth.decode_access_token',
+    service_authorization_checker='auth.is_admin_user',
+    service_header_generator='auth.generate_request_header',
+    response_model='datastructures.users.UserResponse',
+)
+async def update_contractor(contractor_id: int, contractor_form: UserUpdateForm,
+                      request: Request, response: Response):
+    pass
